@@ -1,8 +1,14 @@
 <template lang="pug">
   div.wrapper
-    b-navbar(toggleable type="dark" variant="dark")
+    b-modal(
+      title="GameOver!"
+      v-model="modalShow"
+      @ok="clickOK()"
+    )
+      p.my-4 コメントに反応しよう！
+    b-navbar(toggleable type="light" variant="light")
       b-navbar-brand
-        div
+        div.brand
           b-img.icon(src="https://pbs.twimg.com/media/D0LF_PuU8AAlevh.png" rounded)
           span NasTube
       b-navbar-brand
@@ -17,12 +23,19 @@
               p centerWindow
             b-col(cols="3")
               p rightwindow
+          b-progress(
+            :value="hp"
+            :max="max"
+            show-progress
+            animated
+            :variant="hpBarColor"
+          )
         b-col.chat-window
           div.chat-box
             div.parson-box(v-for="n in item" :key="n")
               b-row
                 b-col(cols="1")
-                  b-img.chat-icon(src="https://picsum.photos/125/125/?image=58" rounded="circle")
+                  b-img.chat-icon(src="https://bties.co.jp/img/bg06.jpg" rounded="circle")
                 b-col(cols="3")
                   span.name-box {{Math.random().toString(36).slice(-8)}}
                 b-col
@@ -42,6 +55,14 @@ export default {
   data () {
     return {
       item: 20,
+      hp: 100,
+      max: 100,
+      modalShow: false,
+      progressBarColor: {
+        'green': 'success',
+        'red': 'danger',
+        'yellow': 'warning'
+      },
       ad: new Audio(),
       buttonItem: [
         {
@@ -82,7 +103,7 @@ export default {
   },
   updated () {
     this.$nextTick(() => {
-      let container = document.querySelector('.chat-box')
+      const container = document.querySelector('.chat-box')
       container.scrollTop = container.scrollHeight
     })
   },
@@ -98,6 +119,7 @@ export default {
       this.ad.pause()
       this.ad.src = url
       this.ad.play()
+      this.hp -= 10
     },
     makeVoiceUrl (name) {
       const url = 'https://www.natorisana.love/sounds/'
@@ -108,6 +130,30 @@ export default {
       const choiceIndex = Math.floor(Math.random() * voiceURList.length)
       const url = this.makeVoiceUrl(voiceURList[choiceIndex])
       this.playAudio(url)
+    },
+    resetHP () {
+      this.hp = 100
+    },
+    clickOK () {
+      this.resetHP()
+    }
+  },
+  computed: {
+    hpBarColor () {
+      if (this.hp > 60) return this.progressBarColor.green
+      else if (this.hp > 30) return this.progressBarColor.yellow
+      else return this.progressBarColor.red
+    }
+  },
+  watch: {
+    item (val) {
+      const box = document.querySelector('.chat-window')
+      const parson = document.querySelector('.parson-box')
+      if (val > Math.floor(box.scrollHeight / parson.scrollHeight)) this.item--
+    },
+    hp (val) {
+      console.log(val, this.modalShow)
+      if (val <= 0) this.modalShow = !this.modalShow
     }
   }
 }
@@ -145,12 +191,12 @@ export default {
     width: 16vw;
   }
   .chat-box{
-    height: 80vh;
+    height: 75vh;
   }
 }
 @media screen and (max-width: 1259px){
   .parson-box{
-    width: 80vw;
+    width: 90vw;
   }
   .chat-box{
     height: 20vh;
