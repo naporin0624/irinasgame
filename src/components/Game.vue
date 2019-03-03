@@ -10,6 +10,7 @@
       p.comment コメントに反応しよう！
       p.point ポイント
       b-button(class="mt-3" @click="clickOK()" block) 閉じる
+    b-alert.alert(show) Default Alert
     b-navbar(toggleable type="light" variant="light")
       b-navbar-brand
         div.brand
@@ -17,38 +18,38 @@
           span NasTube
       b-navbar-brand
         b-img.icon(src="https://pbs.twimg.com/profile_images/1082257144492187649/rxDuGkcs_400x400.jpg" rounded="circle" alt="Circle image")
-    div.maincontent
+    div.main-content
       b-row
         b-col(cols="9").game-window
           b-row.live
-            b-col(cols="3")
+            b-col.left(cols="3")
               b-img.effect-icon(src="../../static/img/thankyou.png")
               b-img.effect-icon(src="../../static/img/aheebi.png")
-            b-col(cols="6")
-              p centerWindow
-            b-col(cols="3")
+            b-col.center(cols="6")
+              b-img.natori(src="https://pbs.twimg.com/media/DrnaffbUcAAuclJ.png")
+            b-col.right(cols="3")
               b-img.effect-icon(src="../../static/img/etti.png")
-          b-row.hp-bar
-            b-col.text(cols="1")
-              span HP
-            b-col
-              b-progress(
-                :value="hp"
-                :max="max"
-                show-progress
-                animated
-                :variant="hpBarColor"
-              )
+          div.hp-bar
+            span HP
+            b-progress(
+              :value="hp"
+              :max="max"
+              show-progress
+              :animated="!modalShow"
+              :variant="hpBarColor"
+            )
         b-col.chat-window
           div.chat-box
-            div.parson-box(v-for="n in item" :key="n")
+            div.parson-box(v-for="cItem in commentItems" :key="cItem.uid")
               b-row
                 b-col(cols="1")
-                  b-img.chat-icon(src="https://pbs.twimg.com/profile_images/1091565843228454913/AkjKzOvj_400x400.jpg" rounded="circle")
+                  b-img.chat-icon(
+                    :src="cItem.icon"
+                    rounded="circle")
                 b-col(cols="3")
-                  span.name-box {{Math.random().toString(36).slice(-8)}}
+                  span.name-box {{cItem.name}}
                 b-col
-                  span.parson-box {{Math.random().toString(36).slice(-8)}}
+                  span.parson-box {{cItem.comment}}
           b-button-group.action-box
             b-button(
               size="sm"
@@ -63,7 +64,7 @@ export default {
   name: 'Game',
   data () {
     return {
-      item: 20,
+      commentItems: [],
       stage: 1,
       hp: 100,
       max: 100,
@@ -74,6 +75,20 @@ export default {
         'yellow': 'warning'
       },
       ad: new Audio(),
+      faceIcon: [
+        'https://3.bp.blogspot.com/-KgUzGDeV8r8/VaMOD3z_X-I/AAAAAAAAvh8/YK5LucKKUmo/s170/boy_01.png',
+        'https://2.bp.blogspot.com/-H3-fqqm8qWo/VaMOEUvMmvI/AAAAAAAAvh4/_Y4PrsjulSw/s800/boy_02.png',
+        'https://2.bp.blogspot.com/-D_mv2QF9rCg/VaMOFUh9EhI/AAAAAAAAviM/7_m2W2hR1TY/s800/boy_03.png',
+        'https://3.bp.blogspot.com/-uRt9-Gjitio/VaMOFspgKCI/AAAAAAAAviI/7sdXUVAAzlE/s800/boy_04.png',
+        'https://3.bp.blogspot.com/-jtvaRX9n8OU/VaMOHGaVeRI/AAAAAAAAviQ/D9omX3FtbPw/s800/boy_05.png',
+        'https://4.bp.blogspot.com/-eDLar-FeZ6Q/VaMOHWznrOI/AAAAAAAAvic/MHSkHPvstPI/s800/boy_06.png',
+        'https://3.bp.blogspot.com/-3CtFNaO7nZQ/VaMNdpSHc8I/AAAAAAAAvYA/qFFLFrGkrjo/s800/girl_13.png',
+        'https://2.bp.blogspot.com/-6JmvIZNh6v0/VaMNdoZ16HI/AAAAAAAAvX8/26ub6j9Uh4E/s800/girl_14.png',
+        'https://2.bp.blogspot.com/-b5xF1YTPEo4/VaMNfzznp9I/AAAAAAAAvYk/ByubINYOiXI/s800/girl_20.png',
+        'https://2.bp.blogspot.com/-_2T6ZwRQPso/VaMNfL52n-I/AAAAAAAAvZc/PS91_JU-DOo/s800/girl_18.png',
+        'https://3.bp.blogspot.com/-VGG_G8NltMA/VaMNiDYa-UI/AAAAAAAAvZA/fxGBCmKG_Ug/s800/girl_24.png',
+        'https://2.bp.blogspot.com/-KtkAeTZWRpQ/VaMNg2zA-gI/AAAAAAAAvYw/46beWDLw4GA/s800/girl_22.png'
+      ],
       buttonItem: [
         {
           name: 'えっちじゃん',
@@ -118,13 +133,9 @@ export default {
     })
   },
   created () {
-    this.increment()
+    this.createComent()
   },
   methods: {
-    increment () {
-      this.item++
-      setTimeout(this.increment, 1000)
-    },
     playAudio (url) {
       this.ad.pause()
       this.ad.src = url
@@ -156,6 +167,16 @@ export default {
         else if (this.stage <= 20) this.hp -= 40
         else if (this.stage <= 30) this.hp -= 50
       }
+    },
+    createComent () {
+      const iconIndex = Math.floor(Math.random() * this.faceIcon.length)
+      this.commentItems.push({
+        icon: this.faceIcon[iconIndex],
+        uid: Math.random().toString(36).slice(-8),
+        name: Math.random().toString(36).slice(-8),
+        comment: Math.random().toString(36).slice(-8)
+      })
+      setTimeout(this.createComent, 1000)
     }
   },
   computed: {
@@ -169,7 +190,7 @@ export default {
     item (val) {
       const box = document.querySelector('.chat-window')
       const parson = document.querySelector('.parson-box')
-      if (val > Math.floor(box.scrollHeight / parson.scrollHeight)) this.item--
+      if (val > Math.floor(box.scrollHeight / parson.scrollHeight)) this.commentItems.shift()
     },
     modalShow (val) {
       if (val <= 0 && val === false) this.resetHP()
@@ -182,13 +203,18 @@ export default {
 </script>
 
 <style scoped>
+.alert{
+  position: absolute;
+  left: 0px;
+  top: 100px;
+}
 .icon{
   width: 40px;
 }
-.maincontent{
-  padding-top: 40px;
-  padding-left: 80px;
-  padding-right: 80px;
+.main-content{
+  padding-top: 20px;
+  padding-left: 2vw;
+  padding-right: 2vw;
 }
 .chat-box{
   overflow-y: scroll;
@@ -208,7 +234,33 @@ export default {
   padding-left: 5px;
   padding-right: 5px;
 }
+.live{
+  font-weight: bold;
+  /* border: solid 1px #000000; */
+  background-color: rgb(56, 56, 56);
+}
+.chat-box{
+  font-weight: bold;
+  border: solid 1px #000000;
+}
+.center{
+  background-image: url('https://3.bp.blogspot.com/-wrWa_T7i7u4/VpjBoMACY-I/AAAAAAAA248/GLflyRpwvEs/s1600/bg_hospital_chiryou.jpg')
+}
+.natori{
+  width: 25vw;
+}
+.effect-icon{
+  /* transition: .5s ;
+  -moz-transition:3s ease;
+  -webkit-transition:3s ease;
+  -o-transition:3s ease;
+  -ms-transition:3s ease;
+  transform: rotateZ( 0deg ) ; */
+}
 @media screen and (min-width: 1260px){
+  .live{
+    height: 80vh;
+  }
   .parson-box{
     width: 16vw;
   }
@@ -221,8 +273,23 @@ export default {
   .effect-icon{
     width: 30vh;
   }
+  .center{
+    height: 80vh;
+  }
+  .natori{
+    width: 50vh;
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+  }
 }
 @media screen and (max-width: 1259px){
+  .live{
+    height: 50vh;
+    width: 95vw;
+  }
   .parson-box{
     width: 90vw;
   }
@@ -233,7 +300,18 @@ export default {
     height: 60vh;
   }
   .effect-icon{
-  width: 15vh;
+    width: 15vh;
+  }
+  .center{
+    height: 50vh;
+  }
+  .natori{
+    width: 30vh;
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    margin:auto;
   }
 }
 .text{
@@ -245,7 +323,7 @@ export default {
 }
 .hp-bar{
   position: absolute;
-  bottom: 30px;
-  width: 90vw;
+  bottom: 3vh;
+  width: 95vw;
 }
 </style>
