@@ -23,12 +23,21 @@
         b-col(cols="9").game-window
           b-row.live
             b-col.left(cols="3")
-              b-img.effect-icon(src="../../static/img/thankyou.png")
-              b-img.effect-icon(src="../../static/img/aheebi.png")
+              b-img.effect-icon.thank-you(
+                :class="{active: thankActive}"
+                src="../../static/img/thankyou.png"
+              )
+              b-img.effect-icon.aheebi(
+                :class="{active: aheebiActive}"
+                src="../../static/img/aheebi.png"
+              )
             b-col.center(cols="6")
               b-img.natori(src="https://pbs.twimg.com/media/DrnaffbUcAAuclJ.png")
             b-col.right(cols="3")
-              b-img.effect-icon(src="../../static/img/etti.png")
+              b-img.effect-icon.etti(
+                :class="{ active: ettiActive }"
+                src="../../static/img/etti.png"
+              )
           div.hp-bar
             span HP
             b-progress(
@@ -68,6 +77,9 @@ export default {
       stage: 1,
       hp: 100,
       max: 100,
+      thankActive: false,
+      aheebiActive: false,
+      ettiActive: false,
       modalShow: false,
       progressBarColor: {
         'green': 'success',
@@ -137,20 +149,55 @@ export default {
   },
   methods: {
     playAudio (url) {
-      this.ad.pause()
-      this.ad.src = url
-      this.ad.play()
+      // this.ad.pause()
+      const ad = new Audio()
+      // this.ad.src = url
+      // this.ad.play()
+      ad.src = url
+      ad.play()
       this.damageHP()
     },
     makeVoiceUrl (name) {
       const url = 'https://www.natorisana.love/sounds/'
       return url + name + '.mp3'
     },
-    buttonClick (index) {
+    throwVoiceURL (index) {
       const voiceURList = this.buttonItem[index].url
       const choiceIndex = Math.floor(Math.random() * voiceURList.length)
       const url = this.makeVoiceUrl(voiceURList[choiceIndex])
+      return url
+    },
+    thankIconMoveActive (time) {
+      if (time === undefined || time === null || isNaN(time)) time = 5000
+      this.thankActive = true
+      setTimeout(() => {
+        this.thankActive = false
+      }, time)
+    },
+    aheebiIconMoveAction (time) {
+      if (time === undefined || time === null || isNaN(time)) time = 5000
+      this.aheebiActive = true
+      setTimeout(() => {
+        this.aheebiActive = false
+      }, time)
+    },
+    ettiIconMoveAction (time) {
+      if (time === undefined || time === null || isNaN(time)) time = 5000
+      this.ettiActive = true
+      setTimeout(() => {
+        this.ettiActive = false
+      }, time)
+    },
+    selectMoveAvtionIcon (index, time) {
+      const name = this.buttonItem[index].name
+      if (name === 'ありがとう！') this.thankIconMoveActive(time)
+      else if (name === 'えっちじゃん') this.ettiIconMoveAction(time)
+      else if (name === 'うれしいゾ～') this.aheebiIconMoveAction(time)
+    },
+    buttonClick (index) {
+      const url = this.throwVoiceURL(index)
       this.playAudio(url)
+      this.selectMoveAvtionIcon(index, 3000)
     },
     resetHP () {
       this.hp = 100
@@ -223,20 +270,13 @@ export default {
   width: 30px;
 }
 .name-box{
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 5px;
 }
 .parson-box{
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 5px;
 }
 .live{
   font-weight: bold;
-  /* border: solid 1px #000000; */
   background-color: rgb(56, 56, 56);
 }
 .chat-box{
@@ -244,18 +284,39 @@ export default {
   border: solid 1px #000000;
 }
 .center{
-  background-image: url('https://3.bp.blogspot.com/-wrWa_T7i7u4/VpjBoMACY-I/AAAAAAAA248/GLflyRpwvEs/s1600/bg_hospital_chiryou.jpg')
+  background-image: url(
+    'https://3.bp.blogspot.com/-wrWa_T7i7u4/VpjBoMACY-I/AAAAAAAA248/GLflyRpwvEs/s1600/bg_hospital_chiryou.jpg'
+  )
 }
 .natori{
   width: 25vw;
+  z-index: 0;
 }
 .effect-icon{
-  /* transition: .5s ;
-  -moz-transition:3s ease;
-  -webkit-transition:3s ease;
-  -o-transition:3s ease;
-  -ms-transition:3s ease;
-  transform: rotateZ( 0deg ) ; */
+  position: relative;
+  z-index: 1000;
+}
+.active{
+  animation: updown .5s infinite;
+}
+@keyframes idou {
+  100%{
+    transform: translateX(25vw) translateY(25vh);
+  }
+}
+@keyframes updown {
+  0%{transform: translateY(0px)}
+  25%{transform: translateY(20px)}
+  50%{transform: translateY(0px)}
+  75%{transform: translateY(20px)}
+  100%{transform: translateY((0px))}
+}
+@keyframes hurueru {
+    0% {transform: translate(0px, 0px) rotateZ(0deg)}
+    25% {transform: translate(3px, 3px) rotateZ(10deg)}
+    50% {transform: translate(0px, 3px) rotateZ(0deg)}
+    75% {transform: translate(3px, 0px) rotateZ(-10deg)}
+    100% {transform: translate(0px, 0px) rotateZ(0deg)}
 }
 @media screen and (min-width: 1260px){
   .live{
