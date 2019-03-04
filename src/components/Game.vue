@@ -86,7 +86,6 @@ export default {
         'red': 'danger',
         'yellow': 'warning'
       },
-      ad: new Audio(),
       faceIcon: [
         'https://3.bp.blogspot.com/-KgUzGDeV8r8/VaMOD3z_X-I/AAAAAAAAvh8/YK5LucKKUmo/s170/boy_01.png',
         'https://2.bp.blogspot.com/-H3-fqqm8qWo/VaMOEUvMmvI/AAAAAAAAvh4/_Y4PrsjulSw/s800/boy_02.png',
@@ -149,10 +148,7 @@ export default {
   },
   methods: {
     playAudio (url) {
-      // this.ad.pause()
       const ad = new Audio()
-      // this.ad.src = url
-      // this.ad.play()
       ad.src = url
       ad.play()
       this.damageHP()
