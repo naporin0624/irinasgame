@@ -147,9 +147,12 @@ export default {
     this.createComent()
   },
   methods: {
-    playAudio (url) {
+    playAudio (index) {
       const ad = new Audio()
-      ad.src = url
+      ad.addEventListener('loadedmetadata', () => {
+        this.selectMoveAvtionIcon(index, ad.duration * 1000)
+      })
+      ad.src = this.throwVoiceURL(index)
       ad.play()
       this.damageHP()
     },
@@ -164,36 +167,32 @@ export default {
       return url
     },
     thankIconMoveActive (time) {
-      if (time === undefined || time === null || isNaN(time)) time = 5000
       this.thankActive = true
       setTimeout(() => {
         this.thankActive = false
       }, time)
     },
     aheebiIconMoveAction (time) {
-      if (time === undefined || time === null || isNaN(time)) time = 5000
       this.aheebiActive = true
       setTimeout(() => {
         this.aheebiActive = false
       }, time)
     },
     ettiIconMoveAction (time) {
-      if (time === undefined || time === null || isNaN(time)) time = 5000
       this.ettiActive = true
       setTimeout(() => {
         this.ettiActive = false
       }, time)
     },
     selectMoveAvtionIcon (index, time) {
+      console.log('run selectMovdActionItem', index, time)
       const name = this.buttonItem[index].name
       if (name === 'ありがとう！') this.thankIconMoveActive(time)
       else if (name === 'えっちじゃん') this.ettiIconMoveAction(time)
       else if (name === 'うれしいゾ～') this.aheebiIconMoveAction(time)
     },
     buttonClick (index) {
-      const url = this.throwVoiceURL(index)
-      this.playAudio(url)
-      this.selectMoveAvtionIcon(index, 3000)
+      this.playAudio(index)
     },
     resetHP () {
       this.hp = 100
