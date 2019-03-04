@@ -74,7 +74,7 @@ export default {
   data () {
     return {
       commentItems: [],
-      stage: 1,
+      stage: 10,
       hp: 100,
       max: 100,
       thankActive: false,
@@ -305,13 +305,6 @@ export default {
   50%{transform: translateY(0px)}
   75%{transform: translateY(20px)}
   100%{transform: translateY((0px))}
-}
-@keyframes hurueru {
-    0% {transform: translate(0px, 0px) rotateZ(0deg)}
-    25% {transform: translate(3px, 3px) rotateZ(10deg)}
-    50% {transform: translate(0px, 3px) rotateZ(0deg)}
-    75% {transform: translate(3px, 0px) rotateZ(-10deg)}
-    100% {transform: translate(0px, 0px) rotateZ(0deg)}
 }
 @media screen and (min-width: 1260px){
   .live{
