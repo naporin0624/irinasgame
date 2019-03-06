@@ -10,7 +10,7 @@
       p.comment コメントに反応しよう！
       p.point ポイント
       b-button(class="mt-3" @click="clickOK()" block) 閉じる
-    b-alert.alert(show) Default Alert
+    //- b-alert.alert(show) Default Alert
     b-navbar(toggleable type="light" variant="light")
       b-navbar-brand
         div.brand
@@ -27,9 +27,9 @@
                 :class="{active: thankActive}"
                 src="../../static/img/thankyou.png"
               )
-              b-img.effect-icon.aheebi(
-                :class="{active: aheebiActive}"
-                src="../../static/img/aheebi.png"
+              b-img.effect-icon.ahecchi(
+                :class="{active: ahecchiActive}"
+                src="../../static/img/ahecchi.png"
               )
             b-col.center(cols="6")
               b-img.natori(src="https://pbs.twimg.com/media/DrnaffbUcAAuclJ.png")
@@ -78,9 +78,15 @@ export default {
       hp: 100,
       max: 100,
       thankActive: false,
-      aheebiActive: false,
+      ahecchiActive: false,
       ettiActive: false,
       modalShow: false,
+      commentSpeed: 1000,
+      templateComment: {
+        'thank': ['¥3160', '¥710', '¥37', '¥3737'],
+        'etti': ['今日のパンツの色何色！？！？！？！？', 'ふーんえっちじゃん', 'まぁ俺の方がエッチだけどね'],
+        'ahecchi': ['１周年おめでと〜']
+      },
       progressBarColor: {
         'green': 'success',
         'red': 'danger',
@@ -144,7 +150,7 @@ export default {
     })
   },
   created () {
-    this.createComent()
+    this.printComment()
   },
   methods: {
     playAudio (index) {
@@ -172,10 +178,10 @@ export default {
         this.thankActive = false
       }, time)
     },
-    aheebiIconMoveAction (time) {
-      this.aheebiActive = true
+    ahecchiIconMoveAction (time) {
+      this.ahecchiActive = true
       setTimeout(() => {
-        this.aheebiActive = false
+        this.ahecchiActive = false
       }, time)
     },
     ettiIconMoveAction (time) {
@@ -189,7 +195,7 @@ export default {
       const name = this.buttonItem[index].name
       if (name === 'ありがとう！') this.thankIconMoveActive(time)
       else if (name === 'えっちじゃん') this.ettiIconMoveAction(time)
-      else if (name === 'うれしいゾ～') this.aheebiIconMoveAction(time)
+      else if (name === 'うれしいゾ～') this.ahecchiIconMoveAction(time)
     },
     buttonClick (index) {
       this.playAudio(index)
@@ -210,15 +216,30 @@ export default {
         else if (this.stage <= 30) this.hp -= 50
       }
     },
-    createComent () {
+    createComentObjTemplate () {
       const iconIndex = Math.floor(Math.random() * this.faceIcon.length)
-      this.commentItems.push({
+      return {
         icon: this.faceIcon[iconIndex],
         uid: Math.random().toString(36).slice(-8),
-        name: Math.random().toString(36).slice(-8),
-        comment: Math.random().toString(36).slice(-8)
-      })
-      setTimeout(this.createComent, 1000)
+        name: Math.random().toString(36).slice(-8)
+      }
+    },
+    printComment () {
+      const random = Math.random()
+      let displayComment = {}
+      if (random > 0.7) {
+        displayComment = this.createComentObjTemplate()
+        const keys = Object.keys(this.templateComment)
+        const commentPatternChoiceIndex = Math.floor(Math.random() * keys.length)
+        const commentList = this.templateComment[keys[commentPatternChoiceIndex]]
+        const commentIndex = Math.floor(Math.random() * commentList.length)
+        displayComment.comment = commentList[commentIndex]
+      } else {
+        displayComment = this.createComentObjTemplate()
+        displayComment.comment = Math.random().toString(36).slice(-8)
+      }
+      this.commentItems.push(displayComment)
+      setTimeout(this.printComment, this.commentSpeed)
     }
   },
   computed: {
@@ -229,10 +250,10 @@ export default {
     }
   },
   watch: {
-    item (val) {
+    commentItems (val) {
       const box = document.querySelector('.chat-window')
       const parson = document.querySelector('.parson-box')
-      if (val > Math.floor(box.scrollHeight / parson.scrollHeight)) this.commentItems.shift()
+      if (val.length > Math.floor(box.scrollHeight / parson.scrollHeight) - 1) this.commentItems.shift()
     },
     modalShow (val) {
       if (val <= 0 && val === false) this.resetHP()
