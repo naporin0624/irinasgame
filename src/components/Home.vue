@@ -1,6 +1,7 @@
 <template lang="pug">
 div.wrapper
   h1 名取のIRINASコメント反応ゲーム!
+  h2 このサイトは名取さな様とは一切関係がありません
   u.sorry
     b.sorry さなちゃんからいつも元気貰ってます、ありがとう！
   br
