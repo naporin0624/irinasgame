@@ -1,6 +1,8 @@
 <template lang="pug">
   div.wrapper
     b-modal(
+      no-close-on-esc
+      no-close-on-backdrop
       title="GameOver!"
       hide-footer
       v-model="modalShow"
@@ -13,11 +15,13 @@
     b-navbar(toggleable type="light" variant="light")
       b-navbar-brand
         div.brand
-          b-img.icon(src="https://pbs.twimg.com/media/D0LF_PuU8AAlevh.png" rounded)
+          //- b-img.icon(src="https://pbs.twimg.com/media/D0LF_PuU8AAlevh.png" rounded)
+          b-img.icon(src="http://flode-design.com/f/f_vegetable37/f_vegetable371.png" rounded)
           span NasTube
       b-navbar-brand
         span.point 視聴数: {{clearCount*10}}人
-        b-img.icon(src="https://pbs.twimg.com/profile_images/1082257144492187649/rxDuGkcs_400x400.jpg" rounded="circle" alt="Circle image")
+        //- b-img.icon(src="https://pbs.twimg.com/profile_images/1082257144492187649/rxDuGkcs_400x400.jpg" rounded="circle" alt="Circle image")
+        b-img.icon(src="../../static/img/icon.png" rounded="circle" alt="Circle image")
     div.main-content
       b-row
         b-col(cols="9").game-window
@@ -32,7 +36,8 @@
                 src="../../static/img/ahecchi.png"
               )
             b-col.center(cols="6")
-              b-img.natori(src="https://pbs.twimg.com/media/DrnaffbUcAAuclJ.png")
+              //- b-img.natori(src="https://pbs.twimg.com/media/DrnaffbUcAAuclJ.png")
+              b-img.natori(src="../../static/img/nasu.png")
             b-col.right(cols="3")
               b-img.effect-icon.etti-icon(
                 :class="{ active: ettiActive }"
@@ -214,7 +219,7 @@ export default {
       if (this.clearCount % 5 === 0 && this.clearCount !== 0) {
         this.stage++
         this.commentSpeed /= 1.5
-        if (this.commentSpeed < 100) this.commentSpeed = 100
+        if (this.commentSpeed < 150) this.commentSpeed = 150
       }
     },
     firstObjectFind (type) {
