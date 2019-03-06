@@ -6,7 +6,7 @@
       v-model="modalShow"
     )
       p.comment コメントに反応しよう！
-      p.point {{clearCount*10}}point!!
+      p.point {{clearCount*10}}人の来場者！
       b-button(class="mt-3" @click="clickOK()" block) 閉じる
       b-button(class="mt-3" block)
         router-link(to="/") Homeに戻る
@@ -16,7 +16,7 @@
           b-img.icon(src="https://pbs.twimg.com/media/D0LF_PuU8AAlevh.png" rounded)
           span NasTube
       b-navbar-brand
-        span.point {{clearCount*10}}point
+        span.point 視聴数: {{clearCount*10}}人
         b-img.icon(src="https://pbs.twimg.com/profile_images/1082257144492187649/rxDuGkcs_400x400.jpg" rounded="circle" alt="Circle image")
     div.main-content
       b-row
