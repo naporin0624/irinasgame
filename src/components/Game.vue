@@ -9,6 +9,12 @@
     )
       p.comment コメントに反応しよう！
       p.point {{clearCount*10}}人の来場者！
+        a.twitter-share-button(
+          href="https://twitter.com/share"
+          data-url="https://irinasgame.herokuapp.com/"
+          data-lang="ja"
+          data-hashtags="IRINASゲーム"
+        ) 結果をツイートする
       b-button(class="mt-3" @click="clickOK()" block) 閉じる
       b-button(class="mt-3" block)
         router-link(to="/") Homeに戻る
