@@ -5,10 +5,8 @@
       hide-footer
       v-model="modalShow"
     )
-      div.d-block.text-center
-        h3 Hello From My Modal!
       p.comment コメントに反応しよう！
-      p.point ポイント
+      p.point {{clearCount*10}}point!!
       b-button(class="mt-3" @click="clickOK()" block) 閉じる
     b-navbar(toggleable type="light" variant="light")
       b-navbar-brand
@@ -16,6 +14,7 @@
           b-img.icon(src="https://pbs.twimg.com/media/D0LF_PuU8AAlevh.png" rounded)
           span NasTube
       b-navbar-brand
+        span.point {{clearCount*10}}point
         b-img.icon(src="https://pbs.twimg.com/profile_images/1082257144492187649/rxDuGkcs_400x400.jpg" rounded="circle" alt="Circle image")
     div.main-content
       b-row
@@ -70,7 +69,8 @@ export default {
   data () {
     return {
       commentItems: [],
-      stage: 10,
+      clearCount: 0,
+      stage: 1,
       hp: 100,
       max: 100,
       thankActive: false,
@@ -102,6 +102,14 @@ export default {
         'https://3.bp.blogspot.com/-VGG_G8NltMA/VaMNiDYa-UI/AAAAAAAAvZA/fxGBCmKG_Ug/s800/girl_24.png',
         'https://2.bp.blogspot.com/-KtkAeTZWRpQ/VaMNg2zA-gI/AAAAAAAAvYw/46beWDLw4GA/s800/girl_22.png'
       ],
+      damageVoice: [
+        '沼地の魔女こと名取さなですけども/ヴッ！',
+        '沼地の魔女こと名取さなですけども/ヴッ！2',
+        '沼地の魔女こと名取さなですけども/ヴッ！3'
+      ],
+      finVoice: [
+        'せんせえがバーチャルさんを見ている時バーチャルさんもまた以下略/おわり～'
+      ],
       buttonItem: [
         {
           name: 'etti',
@@ -130,7 +138,7 @@ export default {
           ]
         },
         {
-          name: 'ehecchi',
+          name: 'ahecchi',
           url: [
             '今日何の日か知ってる？/すっげえ嬉しかったゾ～',
             '今日何の日か知ってる？/すっげえ嬉しかったゾ～2'
@@ -189,11 +197,29 @@ export default {
       const name = this.buttonItem[index].name
       if (name === 'thank') this.thankIconMoveActive(time)
       else if (name === 'etti') this.ettiIconMoveAction(time)
-      else if (name === 'ehecchi') this.ahecchiIconMoveAction(time)
+      else if (name === 'ahecchi') this.ahecchiIconMoveAction(time)
     },
     buttonClick (index) {
-      const commetType = this.commentItems[index].name
-      this.playAudio(index)
+      const commentType = this.buttonItem[index].name
+      const commnetIndex = this.firstObjectFind(commentType)
+      if (commnetIndex !== -1) {
+        this.playAudio(index)
+        this.commentItems[ commnetIndex ].clearFlag = true
+        this.clearCount++
+      } else {
+        this.damageHP()
+      }
+      if (this.clearCount % 5 === 0) {
+        this.stage++
+        this.commentSpeed /= 1.5
+        if (this.commentSpeed < 100) this.commentSpeed = 100
+      }
+    },
+    firstObjectFind (type) {
+      const index = this.commentItems.findIndex(item => {
+        return item.castomClass === type && !item.clearFlag
+      }) || -1
+      return index
     },
     resetHP () {
       this.hp = 100
@@ -201,6 +227,13 @@ export default {
     clickOK () {
       this.resetHP()
       this.modalShow = !this.modalShow
+      this.commentItems.splice(0)
+      this.commentSpeed = 1000
+      this.stage = 1
+      this.clearCount = 0
+      this.thankActive = false
+      this.ahecchiActive = false
+      this.ettiActive = false
     },
     damageHP () {
       if (this.hp > 0) {
@@ -209,6 +242,9 @@ export default {
         else if (this.stage <= 15) this.hp -= 30
         else if (this.stage <= 20) this.hp -= 40
         else if (this.stage <= 30) this.hp -= 50
+        let ad = new Audio()
+        ad.src = this.makeVoiceUrl(this.damageVoice[Math.floor(Math.random() * this.damageVoice.length)])
+        ad.play()
       }
     },
     createComentObjTemplate () {
@@ -218,13 +254,13 @@ export default {
         uid: Math.random().toString(36).slice(-8),
         name: Math.random().toString(36).slice(-8),
         castomClass: 'no-active',
-        claerFlag: false
+        clearFlag: false
       }
     },
     printComment () {
       const random = Math.random()
       let displayComment = {}
-      if (random > 0.7) {
+      if (random > 0.7 && this.commentItems.length > 0) {
         displayComment = this.createComentObjTemplate()
         const keys = Object.keys(this.templateComment)
         const commentPatternChoiceIndex = Math.floor(Math.random() * keys.length)
@@ -249,17 +285,17 @@ export default {
     },
     btnShineJadgeThank () {
       return this.commentItems.filter(item => {
-        return item.castomClass === 'thank' && !item.claerFlag
+        return item.castomClass === 'thank' && !item.clearFlag
       }).length > 0
     },
     btnShineJadgeEtti () {
       return this.commentItems.filter(item => {
-        return item.castomClass === 'etti' && !item.claerFlag
+        return item.castomClass === 'etti' && !item.clearFlag
       }).length > 0
     },
     btnShineJadgeAhecchi () {
       return this.commentItems.filter(item => {
-        return item.castomClass === 'ahecchi' && !item.claerFlag
+        return item.castomClass === 'ahecchi' && !item.clearFlag
       }).length > 0
     }
   },
@@ -267,13 +303,21 @@ export default {
     commentItems (val) {
       const box = document.querySelector('.chat-window')
       const parson = document.querySelector('.parson-box')
-      if (val.length > Math.floor(box.scrollHeight / parson.scrollHeight) - 1) this.commentItems.shift()
+      if (val.length > Math.floor(box.scrollHeight / parson.scrollHeight) - 1) {
+        const removeItem = this.commentItems.shift()
+        if (!removeItem.clearFlag && removeItem.castomClass !== 'no-active') this.damageHP()
+      }
     },
     modalShow (val) {
       if (val <= 0 && val === false) this.resetHP()
     },
     hp (val) {
-      if (val <= 0) this.modalShow = !this.modalShow
+      if (val <= 0) {
+        this.modalShow = !this.modalShow
+        let ad = new Audio()
+        ad.src = this.makeVoiceUrl(this.finVoice[Math.floor(Math.random() * this.finVoice.length)])
+        ad.play()
+      }
     }
   }
 }
@@ -438,5 +482,9 @@ export default {
   position: absolute;
   bottom: 3vh;
   width: 95vw;
+}
+.point{
+  padding: 10px;
+  font-size: 150%;
 }
 </style>
