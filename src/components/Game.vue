@@ -8,7 +8,7 @@
       v-model="modalShow"
     )
       p.comment コメントに反応しよう！
-      p.point {{clearCount*10}}人の来場者！
+      p.point {{clearCount*10*stage}}人の来場者！
         a.twitter-share-button(
           href="https://twitter.com/share"
           data-url="https://irinasgame.herokuapp.com/"
@@ -25,7 +25,7 @@
           b-img.icon(src="http://flode-design.com/f/f_vegetable37/f_vegetable371.png" rounded)
           span NasTube
       b-navbar-brand
-        span.point 視聴数: {{clearCount*10}}人
+        span.point 視聴数: {{clearCount*10*stage}}人
         //- b-img.icon(src="https://pbs.twimg.com/profile_images/1082257144492187649/rxDuGkcs_400x400.jpg" rounded="circle" alt="Circle image")
         b-img.icon(src="../../static/img/icon.png" rounded="circle" alt="Circle image")
     div.main-content
