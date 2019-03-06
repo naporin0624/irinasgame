@@ -10,7 +10,6 @@
       p.comment コメントに反応しよう！
       p.point ポイント
       b-button(class="mt-3" @click="clickOK()" block) 閉じる
-    //- b-alert.alert(show) Default Alert
     b-navbar(toggleable type="light" variant="light")
       b-navbar-brand
         div.brand
@@ -23,18 +22,18 @@
         b-col(cols="9").game-window
           b-row.live
             b-col.left(cols="3")
-              b-img.effect-icon.thank-you(
+              b-img.effect-icon.thank-icon(
                 :class="{active: thankActive}"
                 src="../../static/img/thankyou.png"
               )
-              b-img.effect-icon.ahecchi(
+              b-img.effect-icon.ahecchi-icon(
                 :class="{active: ahecchiActive}"
                 src="../../static/img/ahecchi.png"
               )
             b-col.center(cols="6")
               b-img.natori(src="https://pbs.twimg.com/media/DrnaffbUcAAuclJ.png")
             b-col.right(cols="3")
-              b-img.effect-icon.etti(
+              b-img.effect-icon.etti-icon(
                 :class="{ active: ettiActive }"
                 src="../../static/img/etti.png"
               )
@@ -49,7 +48,7 @@
             )
         b-col.chat-window
           div.chat-box
-            div.parson-box(v-for="cItem in commentItems" :key="cItem.uid")
+            div.parson-box(v-for="cItem in commentItems" :key="cItem.uid" :class="[cItem.castomClass, {'success': cItem.clearFlag}]")
               b-row
                 b-col(cols="1")
                   b-img.chat-icon(
@@ -60,12 +59,9 @@
                 b-col
                   span.parson-box {{cItem.comment}}
           b-button-group.action-box
-            b-button(
-              size="sm"
-              v-for="(item, index) in buttonItem"
-              :key="item.name"
-              @click="buttonClick(index)"
-            ) {{item.name}}
+            b-button(size="sm" @click="buttonClick(1)" :class="{ 'shine-btn': btnShineJadgeThank }") ありがとう！
+            b-button(size="sm" @click="buttonClick(0)" :class="{ 'shine-btn': btnShineJadgeEtti }") えっちじゃん
+            b-button(size="sm" @click="buttonClick(2)" :class="{ 'shine-btn': btnShineJadgeAhecchi }") うれしいゾ～
 </template>
 
 <script>
@@ -84,7 +80,7 @@ export default {
       commentSpeed: 1000,
       templateComment: {
         'thank': ['¥3160', '¥710', '¥37', '¥3737'],
-        'etti': ['今日のパンツの色何色！？！？！？！？', 'ふーんえっちじゃん', 'まぁ俺の方がエッチだけどね'],
+        'etti': ['今日のパンツの色何色', 'ふーんえっちじゃん', 'まぁ俺の方がエッチだけどね'],
         'ahecchi': ['１周年おめでと〜']
       },
       progressBarColor: {
@@ -108,7 +104,7 @@ export default {
       ],
       buttonItem: [
         {
-          name: 'えっちじゃん',
+          name: 'etti',
           url: [
             '今日何の日か知ってる？/ふーん、エッチじゃん1',
             '今日何の日か知ってる？/ふーん、エッチじゃん2',
@@ -117,7 +113,7 @@ export default {
           ]
         },
         {
-          name: 'ありがとう！',
+          name: 'thank',
           url: [
             '今日何の日か知ってる？/ありがと～1',
             '今日何の日か知ってる？/ありがと～2',
@@ -134,7 +130,7 @@ export default {
           ]
         },
         {
-          name: 'うれしいゾ～',
+          name: 'ehecchi',
           url: [
             '今日何の日か知ってる？/すっげえ嬉しかったゾ～',
             '今日何の日か知ってる？/すっげえ嬉しかったゾ～2'
@@ -160,7 +156,6 @@ export default {
       })
       ad.src = this.throwVoiceURL(index)
       ad.play()
-      this.damageHP()
     },
     makeVoiceUrl (name) {
       const url = 'https://www.natorisana.love/sounds/'
@@ -191,13 +186,13 @@ export default {
       }, time)
     },
     selectMoveAvtionIcon (index, time) {
-      console.log('run selectMovdActionItem', index, time)
       const name = this.buttonItem[index].name
-      if (name === 'ありがとう！') this.thankIconMoveActive(time)
-      else if (name === 'えっちじゃん') this.ettiIconMoveAction(time)
-      else if (name === 'うれしいゾ～') this.ahecchiIconMoveAction(time)
+      if (name === 'thank') this.thankIconMoveActive(time)
+      else if (name === 'etti') this.ettiIconMoveAction(time)
+      else if (name === 'ehecchi') this.ahecchiIconMoveAction(time)
     },
     buttonClick (index) {
+      const commetType = this.commentItems[index].name
       this.playAudio(index)
     },
     resetHP () {
@@ -221,7 +216,9 @@ export default {
       return {
         icon: this.faceIcon[iconIndex],
         uid: Math.random().toString(36).slice(-8),
-        name: Math.random().toString(36).slice(-8)
+        name: Math.random().toString(36).slice(-8),
+        castomClass: 'no-active',
+        claerFlag: false
       }
     },
     printComment () {
@@ -234,6 +231,8 @@ export default {
         const commentList = this.templateComment[keys[commentPatternChoiceIndex]]
         const commentIndex = Math.floor(Math.random() * commentList.length)
         displayComment.comment = commentList[commentIndex]
+        // customだけどめんどくさいからこのまま
+        displayComment.castomClass = keys[commentPatternChoiceIndex]
       } else {
         displayComment = this.createComentObjTemplate()
         displayComment.comment = Math.random().toString(36).slice(-8)
@@ -247,6 +246,21 @@ export default {
       if (this.hp > 60) return this.progressBarColor.green
       else if (this.hp > 30) return this.progressBarColor.yellow
       else return this.progressBarColor.red
+    },
+    btnShineJadgeThank () {
+      return this.commentItems.filter(item => {
+        return item.castomClass === 'thank' && !item.claerFlag
+      }).length > 0
+    },
+    btnShineJadgeEtti () {
+      return this.commentItems.filter(item => {
+        return item.castomClass === 'etti' && !item.claerFlag
+      }).length > 0
+    },
+    btnShineJadgeAhecchi () {
+      return this.commentItems.filter(item => {
+        return item.castomClass === 'ahecchi' && !item.claerFlag
+      }).length > 0
     }
   },
   watch: {
@@ -281,6 +295,10 @@ export default {
 }
 .chat-box{
   overflow-y: scroll;
+  background: #efefef;
+}
+.chat-box :hover{
+  background: #bbbaba;
 }
 .chat-icon{
   width: 30px;
@@ -294,10 +312,12 @@ export default {
 .live{
   font-weight: bold;
   background-color: rgb(56, 56, 56);
+  border-radius: 10px;
 }
 .chat-box{
   font-weight: bold;
   border: solid 1px #000000;
+  border-radius: 10px;
 }
 .center{
   background-image: url(
@@ -315,6 +335,27 @@ export default {
 .active{
   animation: updown .5s infinite;
 }
+.thank{
+  background-color: red;
+}
+.etti{
+  background-color: aqua;
+}
+.ahecchi{
+  background-color: burlywood;
+}
+.success{
+  background-color: lightgreen;
+}
+@keyframes BLINK {
+  0%{
+    opacity: 1.0;
+  }
+  100% {
+    opacity:0.5;
+  }
+}
+
 @keyframes idou {
   100%{
     transform: translateX(25vw) translateY(25vh);
@@ -331,17 +372,14 @@ export default {
   .live{
     height: 80vh;
   }
-  .parson-box{
-    width: 16vw;
-  }
   .chat-box{
-    height: 72vh;
+    height: 75vh;
   }
   .game-window{
     height: 90vh;
   }
   .effect-icon{
-    width: 30vh;
+    width: 25vh;
   }
   .center{
     height: 80vh;
@@ -390,6 +428,11 @@ export default {
 }
 .action-box{
   padding: 10px;
+  height: 5vh;
+  width: 100%;
+}
+.shine-btn{
+  animation:BLINK 0.3s ease-in-out infinite alternate;
 }
 .hp-bar{
   position: absolute;
