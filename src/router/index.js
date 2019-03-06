@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import Game from '@/components/Game'
 import Home from '@/components/Home'
 import About from '@/components/About'
+import Thanks from '@/components/Thanks'
 Vue.use(Router)
 
 export default new Router({
@@ -20,5 +21,9 @@ export default new Router({
         path: '/about',
         name: 'About',
         component: About
+    }, {
+        path: '/thanks',
+        name: 'Thanks',
+        component: Thanks
     }]
 })

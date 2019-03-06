@@ -8,6 +8,8 @@
       p.comment コメントに反応しよう！
       p.point {{clearCount*10}}point!!
       b-button(class="mt-3" @click="clickOK()" block) 閉じる
+      b-button(class="mt-3" block)
+        router-link(to="/") Homeに戻る
     b-navbar(toggleable type="light" variant="light")
       b-navbar-brand
         div.brand
@@ -209,7 +211,7 @@ export default {
       } else {
         this.damageHP()
       }
-      if (this.clearCount % 5 === 0) {
+      if (this.clearCount % 5 === 0 && this.clearCount !== 0) {
         this.stage++
         this.commentSpeed /= 1.5
         if (this.commentSpeed < 100) this.commentSpeed = 100

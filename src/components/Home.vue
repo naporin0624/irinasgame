@@ -10,6 +10,8 @@ div.wrapper
     router-link(to="/game") 遊ぶ
   h2
     router-link(to="/about") 使い方
+  h2
+    router-link(to="/thanks") サンクス
   h2 ゲーム画面
   b-img(src="../../static/img/game1.PNG")
 
